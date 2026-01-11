@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>HTML実行＋全画面</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #111;
+  color: #fff;
+}
+
+#controls {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  background: #222;
+}
+
+button {
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+#main {
+  flex: 1;
+  display: flex;
+}
+
+textarea {
+  width: 40%;
+  resize: none;
+  font-family: monospace;
+}
+
+iframe {
+  width: 60%;
+  border: none;
+  background: #000;
+}
+</style>
+</head>
+<body>
+
+<div id="controls">
+  <button onclick="run()">実行</button>
+  <button onclick="fullscreen()">全画面</button>
+</div>
+
+<div id="main">
+  <textarea id="editor">
+<!DOCTYPE html>
+<html>
+<body style="margin:0;background:black;color:white;">
+<canvas id="c"></canvas>
+<script>
+const c = document.getElementById("c");
+const ctx = c.getContext("2d");
+function resize(){
+  c.width = innerWidth;
+  c.height = innerHeight;
+}
+window.onresize = resize;
+resize();
+ctx.fillStyle="red";
+ctx.fillRect(50,50,200,200);
+</script>
+</body>
+</html>
+  </textarea>
+
+  <iframe id="preview" sandbox="allow-scripts allow-pointer-lock"></iframe>
+</div>
+
+<script>
+let currentURL = null;
+
+function run() {
+  const code = editor.value;
+  const blob = new Blob([code], { type: "text/html" });
+  if (currentURL) URL.revokeObjectURL(currentURL);
+  currentURL = URL.createObjectURL(blob);
+  preview.src = currentURL;
+}
+
+function fullscreen() {
+  const el = preview;
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen(); // iOS
+}
+run();
+</script>
+
+</body>
+</html>
